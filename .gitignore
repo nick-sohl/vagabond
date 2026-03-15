@@ -1,0 +1,6 @@
+db/*.db
+
+/vendor/
+
+.php-cs-fixer.cache
+.php-cs-fixer.dist.php
