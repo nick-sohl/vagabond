@@ -2,7 +2,7 @@
 
 namespace FlightBookingSystem\Domain\Enum\Airplane;
 
-enum Range
+enum Flightrange
 {
     case SHORT;
     case MEDIUM;

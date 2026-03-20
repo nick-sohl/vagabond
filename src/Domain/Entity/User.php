@@ -2,8 +2,6 @@
 
 namespace FlightBookingSystem\Domain\Entity;
 
-use InvalidArgumentException;
-
 class User
 {
     // properties
@@ -31,8 +29,8 @@ class User
         get => $this->email;
         set(string $value) {
             $sanitized = filter_var($value, FILTER_SANITIZE_EMAIL);
-            if (! filter_var($sanitized, FILTER_VALIDATE_EMAIL, FILTER_FLAG_EMAIL_UNICODE)) {
-                throw new InvalidArgumentException('Invalid Email');
+            if (!filter_var($sanitized, FILTER_VALIDATE_EMAIL, FILTER_FLAG_EMAIL_UNICODE)) {
+                throw new \InvalidArgumentException('Invalid Email');
             }
             $this->email = $sanitized;
         }

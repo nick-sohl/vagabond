@@ -2,9 +2,9 @@
 
 namespace FlightBookingSystem\Domain\Enum\Airplane;
 
-enum Manufacturer
+enum Manufacturer : string
 {
-    case AIRBUS;
-    case BOEING;
-    case EMBRAER;
+    case AIRBUS = "Airbus";
+    case BOEING = "Boeing";
+    case EMBRAER = "Embraer";
 }

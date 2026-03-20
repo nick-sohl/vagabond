@@ -2,7 +2,6 @@
 
 namespace FlightBookingSystem\Domain\Entity;
 
-use FlightBookingSystem\Domain\Enum\Airplane\Capacity;
 use FlightBookingSystem\Domain\Enum\Airplane\Manufacturer;
 use FlightBookingSystem\Domain\Enum\Airplane\Range;
 
