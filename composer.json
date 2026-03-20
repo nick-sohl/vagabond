@@ -1,6 +1,5 @@
 {
   "name": "nick/flight-booking-system",
-  "require": {},
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.94"
   },

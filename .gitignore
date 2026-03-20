@@ -4,3 +4,8 @@ db/*.db
 
 .php-cs-fixer.cache
 .php-cs-fixer.dist.php
+
+node_modules
+public/css
+public/images
+public/js
