@@ -9,3 +9,5 @@ node_modules
 public/css
 public/images
 public/js
+
+flight_booking_system.sqlite
