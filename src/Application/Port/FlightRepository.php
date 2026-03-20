@@ -1,8 +1,8 @@
 <?php
 
-namespace Nick\FlightBookingSystem\Application\Port;
+namespace FlightBookingSystem\Application\Port;
 
-use App\Domain\Entity\Flight;
+use FlightBookingSystem\Domain\Entity\Flight;
 
 interface FlightRepository
 {
