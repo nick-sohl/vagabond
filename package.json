@@ -1,0 +1,10 @@
+{
+  "scripts": {
+      "dev": "npx @tailwindcss/cli -i ./resources/css/style.css -o ./public/css/output.css --watch"
+  },
+	"dependencies": {
+		"@tailwindcss/cli": "^4.2.2",
+		"htmx.org": "^2.0.8",
+		"tailwindcss": "^4.2.2"
+	}
+}
