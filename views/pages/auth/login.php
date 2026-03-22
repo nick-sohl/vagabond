@@ -1,6 +1,5 @@
-<?php /** Login page */ ?>
+<?php /** @var string|null $error */ ?>
 
-<div>
-    <h1>Login</h1>
-    <!-- Login form component will be included here -->
+<div class="px-4 py-8">
+    <?php include __DIR__ . '/../../components/login-form.php'; ?>
 </div>
