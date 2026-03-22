@@ -2,20 +2,31 @@
 
 namespace FlightBookingSystem\Presentation\Controller;
 
+use FlightBookingSystem\Application\Service\AirlineService;
 use FlightBookingSystem\Presentation\Utility\Htmx;
+use FlightBookingSystem\Presentation\View\View;
 
 class HomeController
 {
+    private AirlineService $airlineService;
+
+    public function __construct(AirlineService $airlineService)
+    {
+        $this->airlineService = $airlineService;
+    }
+
     public function index(): void
     {
-        // Init new View with page (e.g. /flights), view (e.g. index) and variables
-        // we use the extract method to convert assoc array key/values to variables that contain the value
-        $view = new \FlightBookingSystem\Presentation\View\View('home', 'index', ['title' => "Let's Fucking Go!"]);
-        // Include the view with the data
+        $airlines = $this->airlineService->findAll();
+
+        $view = new View('home', 'index', [
+            'airlines' => $airlines,
+        ]);
+
         if (Htmx::isHtmxRequest()) {
-            $view->render(); // only the view
+            $view->render();
         } else {
-            $view->renderFull(); // view wrapped in base layout
+            $view->renderFull();
         }
     }
 }
