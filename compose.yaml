@@ -1,12 +1,22 @@
 services:
   app:
-    build: .
-    ports:
-      - "8080:80"
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     volumes:
       - .:/var/www/html # live-reload code changes
       - /var/www/html/vendor # keeps the container's vendor intact
       - sqlite_data:/var/www/html/database # persistent SQLite storage
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
 
 volumes:
   sqlite_data:

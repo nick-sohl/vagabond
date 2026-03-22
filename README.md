@@ -12,17 +12,18 @@ The goal is a classic client-server 3-tier layered-architecture consisting of a 
 | Layer      | Technology                              |
 |------------|-----------------------------------------|
 | Frontend   | HTML5, CSS3, Tailwind CSS 4.2, HTMX 2.0 |
-| Backend    | PHP 8.5 (CLI)                           |
+| Backend    | PHP 8.5 (FPM for dev, CLI for deploy)   |
 | Database   | SQLite 3 (PDO)                          |
+| Web Server | Nginx (development)                     |
 | Container  | Docker / Docker Compose                 |
 | Hosting    | Railway                                 |
 
 ## Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
-- [Node.js](https://nodejs.org/) >= 18 with [pnpm](https://pnpm.io/) (for Tailwind CSS build, development only)
+- [Node.js](https://nodejs.org/) >= 18 with [pnpm](https://pnpm.io/) (for Tailwind CSS build)
 
-## Installation & Setup
+## Development
 
 ### 1. Clone the repository
 
@@ -31,32 +32,61 @@ git clone <repo-url>
 cd vagabond
 ```
 
-### 2. Start the application
+### 2. Start the dev environment
 
 ```bash
 docker compose up -d --build
 ```
 
-This builds the image (installs dependencies, builds CSS, initializes the database) and starts the app on port `8080`.
+This starts two containers:
+- **app** — PHP 8.5-FPM with Composer dependencies and SQLite
+- **nginx** — Reverse proxy serving the app on port `8080`
 
-### 3. Open the application
+The source code is mounted as a volume, so any changes to PHP or view files are reflected immediately on refresh.
 
-Visit [http://localhost:8080](http://localhost:8080)
+### 3. Start the CSS watcher
 
-### 4. Build CSS (development only)
-
-If you modify Tailwind styles, rebuild the CSS:
+In a separate terminal:
 
 ```bash
 pnpm install
-pnpm dev    # watches for changes
+pnpm dev
 ```
 
-Or one-off build:
+This watches for Tailwind CSS changes and rebuilds `public/css/output.css` automatically.
+
+### 4. Open the application
+
+Visit [http://localhost:8080](http://localhost:8080)
+
+### Typical workflow
 
 ```bash
-pnpm dlx @tailwindcss/cli -i ./resources/css/style.css -o ./public/css/output.css
+# Terminal 1 — start containers (once)
+docker compose up -d --build
+
+# Terminal 2 — watch CSS (keep running)
+pnpm dev
+
+# Edit PHP, views, or CSS → refresh browser
+# Stop when done:
+docker compose down
 ```
+
+### Reset the database
+
+If you need a fresh database:
+
+```bash
+docker compose down -v        # removes the sqlite volume
+docker compose up -d --build  # rebuilds with fresh schema + seed data
+```
+
+## Deployment (Railway)
+
+Railway auto-deploys from the `main` branch using the root `Dockerfile` (PHP-CLI with built-in server). The Tailwind CSS build and database initialization happen during the Docker build step.
+
+No manual setup needed — push to `main` and Railway handles the rest.
 
 ## Test Login
 
@@ -73,7 +103,7 @@ You can also register a new account via the registration page.
 vagabond/
 ├── public/                     # Web root (document root)
 │   ├── index.php               # Entry point — composition root & routing
-│   └── router.php              # Router for PHP built-in server
+│   └── router.php              # Router for PHP built-in server (deploy only)
 ├── src/
 │   ├── Domain/Entity/          # Domain entities (Flight, Airport, etc.)
 │   ├── Application/
@@ -94,10 +124,11 @@ vagabond/
 │   ├── schema.sql              # Database schema (6 tables with indexes)
 │   └── seed.sql                # Test data (40 airports, 20 airlines, 50 flights)
 ├── nginx/
-│   └── default.conf            # Nginx config (for local dev with Nginx if needed)
+│   └── default.conf            # Nginx config for local development
 ├── docs/                       # Documentation & assignment
-├── Dockerfile                  # PHP-CLI image with SQLite, Composer & Tailwind build
-└── compose.yaml                # Docker Compose (single container)
+├── Dockerfile                  # Deploy image (PHP-CLI, builds CSS, seeds DB)
+├── Dockerfile.dev              # Dev image (PHP-FPM for use with Nginx)
+└── compose.yaml                # Docker Compose for local development
 ```
 
 ## Architecture
