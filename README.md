@@ -12,10 +12,10 @@ The goal is a classic client-server 3-tier layered-architecture consisting of a 
 | Layer      | Technology                              |
 |------------|-----------------------------------------|
 | Frontend   | HTML5, CSS3, Tailwind CSS 4.2, HTMX 2.0 |
-| Backend    | PHP 8.5 (FPM)                           |
+| Backend    | PHP 8.5 (CLI)                           |
 | Database   | SQLite 3 (PDO)                          |
-| Web Server | Nginx (Alpine)                          |
 | Container  | Docker / Docker Compose                 |
+| Hosting    | Railway                                 |
 
 ## Prerequisites
 
@@ -37,29 +37,13 @@ cd vagabond
 docker compose up -d --build
 ```
 
-This starts two containers:
-- **app** — PHP 8.5-FPM with Composer dependencies and SQLite
-- **nginx** — Serves the app on port `8080`
+This builds the image (installs dependencies, builds CSS, initializes the database) and starts the app on port `8080`.
 
-### 3. Initialize the database
-
-On first run, create and seed the database:
-
-```bash
-# Open a shell in the PHP container
-docker compose exec app bash
-
-# Inside the container:
-sqlite3 /var/www/html/database/flight_booking_system.sqlite < /var/www/html/db/schema.sql
-sqlite3 /var/www/html/database/flight_booking_system.sqlite < /var/www/html/db/seed.sql
-exit
-```
-
-### 4. Open the application
+### 3. Open the application
 
 Visit [http://localhost:8080](http://localhost:8080)
 
-### 5. Build CSS (development only)
+### 4. Build CSS (development only)
 
 If you modify Tailwind styles, rebuild the CSS:
 
@@ -87,8 +71,9 @@ You can also register a new account via the registration page.
 
 ```
 vagabond/
-├── public/                     # Web root (Nginx document root)
-│   └── index.php               # Entry point — composition root & routing
+├── public/                     # Web root (document root)
+│   ├── index.php               # Entry point — composition root & routing
+│   └── router.php              # Router for PHP built-in server
 ├── src/
 │   ├── Domain/Entity/          # Domain entities (Flight, Airport, etc.)
 │   ├── Application/
@@ -109,10 +94,10 @@ vagabond/
 │   ├── schema.sql              # Database schema (6 tables with indexes)
 │   └── seed.sql                # Test data (40 airports, 20 airlines, 50 flights)
 ├── nginx/
-│   └── default.conf            # Nginx config with PHP routing & static caching
+│   └── default.conf            # Nginx config (for local dev with Nginx if needed)
 ├── docs/                       # Documentation & assignment
-├── Dockerfile                  # PHP-FPM image with SQLite & Composer
-└── compose.yaml                # Docker Compose (app + nginx)
+├── Dockerfile                  # PHP-CLI image with SQLite, Composer & Tailwind build
+└── compose.yaml                # Docker Compose (single container)
 ```
 
 ## Architecture
