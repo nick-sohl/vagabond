@@ -1,7 +1,8 @@
 FROM php:8.5-apache
 
 # Use prefork MPM (required by mod_php) and enable mod_rewrite
-RUN a2dismod mpm_event mpm_worker 2>/dev/null; a2enmod mpm_prefork rewrite
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.* \
+    && a2enmod mpm_prefork rewrite
 
 # Install system dependencies for SQLite
 RUN apt-get update && apt-get install -y \
