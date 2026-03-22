@@ -17,4 +17,9 @@ class AirportService
     {
         return $this->sqliteAirportRepository->findAll();
     }
+
+    public function findByName(string $query): array
+    {
+        return $this->sqliteAirportRepository->findByName($query);
+    }
 }

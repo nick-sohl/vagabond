@@ -12,6 +12,7 @@ class SqliteAirportRepository implements AirportRepository
     private \PDO $pdo;
 
     private string $sql_find_all = 'SELECT * FROM airports;';
+    private string $sql_find_by_input = "SELECT id, iata_code, city FROM airports WHERE city LIKE :input OR iata_code LIKE :iata";
 
     public function __construct()
     {
@@ -27,4 +28,16 @@ class SqliteAirportRepository implements AirportRepository
     }
 
     public function findById(int $id): ?Airport {}
+
+    public function findByName(string $query): array
+    {
+        $statement = $this->pdo->prepare($this->sql_find_by_input);
+        $likeQuery = '%' . $query . '%';
+        $iataQuery = strtoupper($query) . '%';
+        $statement->bindParam(':input', $likeQuery);
+        $statement->bindParam(':iata', $iataQuery);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
 }
