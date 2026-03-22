@@ -11,3 +11,6 @@ public/images
 public/js
 
 flight_booking_system.sqlite
+.DS_Store
+
+/figma_designs/

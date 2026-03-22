@@ -28,6 +28,7 @@ class Router
 
     public function dispatch(string $method, string $path): void
     {
+        $path = parse_url($path, PHP_URL_PATH);
         // Loop through routes look up table and compare it with arguments
         foreach ($this->routes as $route) {
             if ($route['method'] === $method && $route['path'] === $path) {
