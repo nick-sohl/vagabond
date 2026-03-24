@@ -18,6 +18,7 @@ use FlightBookingSystem\Presentation\Controller\AuthController;
 use FlightBookingSystem\Presentation\Controller\BookingController;
 use FlightBookingSystem\Presentation\Controller\FlightController;
 use FlightBookingSystem\Presentation\Controller\HomeController;
+use FlightBookingSystem\Presentation\Controller\PresentationController;
 use FlightBookingSystem\Presentation\Router\Router;
 
 // Composer autoload -> Autoload all Classes
@@ -44,6 +45,7 @@ $bookingsController = new BookingController($bookingService);
 $airportController = new AirportController($airportService);
 $authController = new AuthController($authService);
 $accountController = new AccountController($authService);
+$presentationController = new PresentationController();
 
 // 4. Register routes with instances
 $router = new Router();
@@ -68,6 +70,9 @@ $router->get('/auth/register', [$authController, 'registerPage']);
 $router->post('/auth/login', [$authController, 'login']);
 $router->post('/auth/register', [$authController, 'register']);
 $router->get('/auth/logout', [$authController, 'logout']);
+
+// Presentation
+$router->get('/presentation', [$presentationController, 'index']);
 
 // Resource endpoints (render fragments for HTMX components)
 $router->get('/api/airports', [$airportController, 'airports']);
