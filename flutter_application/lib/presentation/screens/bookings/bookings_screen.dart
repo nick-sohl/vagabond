@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/format.dart';
 import '../../../data/models/booking.dart';
 import '../../../data/repositories/booking_repository.dart';
@@ -98,9 +99,10 @@ class _FiltersState extends State<_Filters> {
   @override
   Widget build(BuildContext context) {
     final state = widget.state;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: BrutalCard(
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -163,92 +165,147 @@ class _FiltersState extends State<_Filters> {
   }
 }
 
+// einzelne buchung als card. layout an booking-card.php auf der webseite
+// angelehnt: airline + flight nr + status pill oben, riesige IATA codes
+// in der mitte, datum + preis unten
 class _BookingTile extends StatelessWidget {
   const _BookingTile({required this.booking});
   final Booking booking;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: BrutalCard(
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(6),
+              Expanded(
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 6,
+                  children: [
+                    Text(
+                      booking.flight.airline.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      booking.flight.flightNumber,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textMuted,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  '#${booking.id}',
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w700,
+              ),
+              _statusPill(booking.status),
+            ]),
+            const SizedBox(height: 16),
+            Row(children: [
+              _Big(text: booking.flight.departure.iata),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Center(
+                  child: SizedBox(
+                    height: 1,
+                    child: ColoredBox(color: Color(0xFFD1D5DB)),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
-              Text(booking.flight.airline.name, style: theme.textTheme.labelLarge),
-              const Spacer(),
-              _StatusChip(status: booking.status),
+              _Big(text: booking.flight.arrival.iata),
             ]),
-            const SizedBox(height: 8),
-            Text(
-              '${booking.flight.departure.iata} → ${booking.flight.arrival.iata}',
-              style: theme.textTheme.headlineSmall,
-            ),
-            Text(Fmt.dateTime(booking.flight.departureTime)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Row(children: [
-              Icon(Icons.calendar_month, size: 16, color: theme.colorScheme.outline),
-              const SizedBox(width: 4),
-              Text('Gebucht am ${Fmt.date(booking.bookingDate)}',
-                  style: theme.textTheme.labelMedium),
-              const Spacer(),
-              Text(
-                '${booking.numTickets}× ${Fmt.price(booking.totalPrice / booking.numTickets)}',
-                style: theme.textTheme.labelMedium,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                Fmt.price(booking.totalPrice),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  booking.flight.departure.city,
+                  style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
                 ),
               ),
+              Text(
+                booking.flight.arrival.city,
+                style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
+              ),
             ]),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.only(top: 12),
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Color(0xFFE5E7EB), width: 1),
+                ),
+              ),
+              child: Row(children: [
+                Expanded(
+                  child: Text(
+                    Fmt.dateTime(booking.flight.departureTime),
+                    style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                  ),
+                ),
+                Text(
+                  '${booking.numTickets}× ',
+                  style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                ),
+                Text(
+                  Fmt.price(booking.totalPrice),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ]),
+            ),
           ],
         ),
       ),
     );
   }
+
+  Widget _statusPill(String status) {
+    return switch (status) {
+      'confirmed' => const StatusPill(
+          label: 'confirmed',
+          color: StatusPill.successText,
+          background: StatusPill.successBg,
+        ),
+      'pending' => const StatusPill(
+          label: 'pending',
+          color: StatusPill.warnText,
+          background: StatusPill.warnBg,
+        ),
+      'cancelled' => const StatusPill(
+          label: 'cancelled',
+          color: StatusPill.dangerText,
+          background: StatusPill.dangerBg,
+        ),
+      _ => StatusPill(
+          label: status,
+          color: StatusPill.mutedText,
+          background: StatusPill.mutedBg,
+        ),
+    };
+  }
 }
 
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.status});
-  final String status;
-
+class _Big extends StatelessWidget {
+  const _Big({required this.text});
+  final String text;
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final (label, color) = switch (status) {
-      'confirmed' => ('bestätigt', theme.colorScheme.primary),
-      'pending'   => ('ausstehend', Colors.orange.shade700),
-      _           => (status, theme.colorScheme.outline),
-    };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 26,
+        fontWeight: FontWeight.w900,
+        height: 1.1,
       ),
-      child: Text(label,
-          style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12)),
     );
   }
 }

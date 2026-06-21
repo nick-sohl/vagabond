@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/format.dart';
 import '../../../data/models/airline.dart';
 import '../../../data/models/airport.dart';
@@ -124,10 +125,9 @@ class _SearchFormState extends State<_SearchForm> {
       padding: const EdgeInsets.all(16),
       child: Form(
         key: _formKey,
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
+        child: BrutalCard(
+          padding: const EdgeInsets.all(16),
+          child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _AirportField(
@@ -228,7 +228,7 @@ class _SearchFormState extends State<_SearchForm> {
                               ),
                             )
                           : const Icon(Icons.search),
-                      label: const Text('Suchen'),
+                      label: const Text('SEARCH'),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -240,12 +240,11 @@ class _SearchFormState extends State<_SearchForm> {
                             _departTime.clear();
                             state.reset();
                           },
-                    child: const Text('Zurücksetzen'),
+                    child: const Text('RESET'),
                   ),
                 ]),
               ],
             ),
-          ),
         ),
       ),
     );
