@@ -9,11 +9,15 @@ use FlightBookingSystem\Application\Service\BookingService;
 use FlightBookingSystem\Application\Service\FlightService;
 use FlightBookingSystem\Infrastructure\Repository\SqliteAirlineRepository;
 use FlightBookingSystem\Infrastructure\Repository\SqliteAirportRepository;
+use FlightBookingSystem\Infrastructure\Repository\SqliteApiTokenRepository;
 use FlightBookingSystem\Infrastructure\Repository\SqliteBookingRepository;
 use FlightBookingSystem\Infrastructure\Repository\SqliteFlightRepository;
 use FlightBookingSystem\Infrastructure\Repository\SqliteUserRepository;
 use FlightBookingSystem\Presentation\Controller\AccountController;
 use FlightBookingSystem\Presentation\Controller\AirportController;
+use FlightBookingSystem\Presentation\Controller\Api\ApiAuthController;
+use FlightBookingSystem\Presentation\Controller\Api\ApiBookingController;
+use FlightBookingSystem\Presentation\Controller\Api\ApiFlightController;
 use FlightBookingSystem\Presentation\Controller\AuthController;
 use FlightBookingSystem\Presentation\Controller\BookingController;
 use FlightBookingSystem\Presentation\Controller\FlightController;
@@ -30,6 +34,7 @@ $sqliteAirportRepo = new SqliteAirportRepository();
 $sqliteAirlineRepo = new SqliteAirlineRepository();
 $sqliteUserRepo = new SqliteUserRepository();
 $sqliteBookingRepo = new SqliteBookingRepository();
+$sqliteApiTokenRepo = new SqliteApiTokenRepository();
 
 // 2. Build Services and inject Adapters
 $flightService = new FlightService($sqliteFlightRepo);
@@ -46,6 +51,11 @@ $airportController = new AirportController($airportService);
 $authController = new AuthController($authService);
 $accountController = new AccountController($authService);
 $presentationController = new PresentationController();
+
+// extra controllers for the mobile app (JSON instead of HTML)
+$apiAuthController = new ApiAuthController($authService, $sqliteApiTokenRepo);
+$apiFlightController = new ApiFlightController($flightService, $airlineService, $airportService);
+$apiBookingController = new ApiBookingController($bookingService, $sqliteApiTokenRepo);
 
 // 4. Register routes with instances
 $router = new Router();
@@ -76,6 +86,30 @@ $router->get('/presentation', [$presentationController, 'index']);
 
 // Resource endpoints (render fragments for HTMX components)
 $router->get('/api/airports', [$airportController, 'airports']);
+
+// routes for the mobile app (/api/v1/*)
+$router->post('/api/v1/auth/login', [$apiAuthController, 'login']);
+$router->post('/api/v1/auth/register', [$apiAuthController, 'register']);
+$router->post('/api/v1/auth/logout', [$apiAuthController, 'logout']);
+$router->get('/api/v1/auth/me', [$apiAuthController, 'me']);
+
+$router->get('/api/v1/flights', [$apiFlightController, 'index']);
+$router->get('/api/v1/flights/show', [$apiFlightController, 'show']);
+$router->get('/api/v1/airlines', [$apiFlightController, 'airlines']);
+$router->get('/api/v1/airports', [$apiFlightController, 'airports']);
+
+$router->get('/api/v1/bookings', [$apiBookingController, 'index']);
+$router->post('/api/v1/bookings', [$apiBookingController, 'create']);
+
+// CORS preflight (OPTIONS) -> just send the allow-headers and quit.
+// browser sends this before the real request to check what is allowed
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS' && str_starts_with($_SERVER['REQUEST_URI'], '/api/')) {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    http_response_code(204);
+    return;
+}
 
 // Fetch method and path from request and invoke dispatch method of Router class
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
