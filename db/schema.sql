@@ -127,3 +127,19 @@ CREATE INDEX IF NOT EXISTS idx_bookings_user
 -- Index for checking bookings per flight (validation)
 CREATE INDEX IF NOT EXISTS idx_bookings_flight
     ON bookings(flight_id);
+
+-- ============================================================
+-- 7. API TOKENS (bearer tokens for the mobile app)
+-- new row on login, deleted on logout
+-- ============================================================
+CREATE TABLE IF NOT EXISTS api_tokens (
+    token      TEXT    PRIMARY KEY,
+    user_id    INTEGER NOT NULL,
+    created_at TEXT    NOT NULL DEFAULT current_timestamp,
+
+    FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_api_tokens_user
+    ON api_tokens(user_id);
