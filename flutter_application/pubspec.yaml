@@ -1,0 +1,36 @@
+name: vagabond
+description: "Vagabond – Flutter mobile client for the Vagabond flight booking middleware (MOA case study)."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # HTTP client for talking to the PHP REST API
+  http: ^1.2.2
+
+  # Lightweight state management for auth + bookings/flights screens
+  provider: ^6.1.2
+
+  # Secure storage for the bearer token (Keychain on iOS, EncryptedSharedPreferences on Android)
+  flutter_secure_storage: ^9.2.2
+
+  # Date/time formatting (German locale)
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Mock HTTP responses in widget/unit tests
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
