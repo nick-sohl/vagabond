@@ -150,6 +150,20 @@ See [db/schema.sql](./db/schema.sql) for the full schema with constraints, forei
 
 ## Documentation
 
-- [Aufgabenstellung](./docs/Aufgabenstellung_Case_Study_WEE.pdf) — Assignment description
-- [Testprotokoll](./docs/testprotokoll.md) — Test protocols for Epics 1-3
-- [Reflexion](./docs/reflexion.md) — Project reflection
+- [Aufgabenstellung](./docs/Aufgabenstellung_Case_Study_WEE.pdf) — WEE assignment description
+- [Testprotokoll](./docs/testprotokoll.md) — WEE test protocols for Epics 1-3
+- [Reflexion](./docs/reflexion.md) — WEE project reflection
+
+### MOA (Mobile App)
+
+The Flutter mobile client lives in [`flutter_application/`](./flutter_application/)
+and consumes a JSON REST API exposed under `/api/v1/*` by this same backend.
+
+- [MOA documentation index](./docs/moa/README.md)
+- [Mobile app README & install guide](./flutter_application/README.md)
+- [REST API reference](./docs/moa/api-reference.md)
+- Test protocols: [Epic 1](./docs/moa/testprotokoll-epic1.md),
+  [Epic 2](./docs/moa/testprotokoll-epic2.md),
+  [Epic 3](./docs/moa/testprotokoll-epic3.md),
+  [Epic 5 NFR](./docs/moa/testprotokoll-epic5-nfr.md)
+- [MOA reflexion](./docs/moa/reflexion.md)
