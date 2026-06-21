@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../state/auth_state.dart';
 import 'register_screen.dart';
 
@@ -50,67 +51,96 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const _Brand(),
+                    const _Wordmark(),
                     const SizedBox(height: 32),
-                    Text(
-                      'Willkommen zurück',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Melde dich an, um deine Flüge zu buchen.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 28),
-                    TextFormField(
-                      key: const Key('login.email'),
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      autocorrect: false,
-                      decoration: const InputDecoration(labelText: 'E-Mail'),
-                      validator: (value) =>
-                          (value == null || !value.contains('@'))
-                              ? 'Bitte eine gültige E-Mail eingeben.'
-                              : null,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      key: const Key('login.password'),
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(labelText: 'Passwort'),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? 'Bitte Passwort eingeben.'
-                          : null,
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      key: const Key('login.submit'),
-                      onPressed: auth.isBusy ? null : _submit,
-                      child: auth.isBusy
-                          ? const SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text('Anmelden'),
+                    BrutalCard(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'LOGIN',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            key: const Key('login.email'),
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            autocorrect: false,
+                            decoration: const InputDecoration(
+                              labelText: 'Email',
+                              hintText: 'you@example.com',
+                            ),
+                            validator: (value) =>
+                                (value == null || !value.contains('@'))
+                                    ? 'Bitte eine gültige E-Mail eingeben.'
+                                    : null,
+                          ),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            key: const Key('login.password'),
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              labelText: 'Password',
+                              hintText: 'Your password',
+                            ),
+                            validator: (value) =>
+                                (value == null || value.isEmpty)
+                                    ? 'Bitte Passwort eingeben.'
+                                    : null,
+                          ),
+                          const SizedBox(height: 20),
+                          FilledButton(
+                            key: const Key('login.submit'),
+                            onPressed: auth.isBusy ? null : _submit,
+                            child: auth.isBusy
+                                ? const SizedBox(
+                                    height: 16,
+                                    width: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text('LOGIN'),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: auth.isBusy
-                          ? null
-                          : () => Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => const RegisterScreen(),
-                              )),
-                      child: const Text('Noch kein Konto? Jetzt registrieren'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Don't have an account? ",
+                          style: TextStyle(color: AppTheme.textMuted),
+                        ),
+                        GestureDetector(
+                          onTap: auth.isBusy
+                              ? null
+                              : () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const RegisterScreen(),
+                                    ),
+                                  ),
+                          child: const Text(
+                            'Register',
+                            style: TextStyle(
+                              color: AppTheme.brandDark,
+                              fontWeight: FontWeight.w700,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -123,29 +153,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class _Brand extends StatelessWidget {
-  const _Brand();
+// "vagabond" wordmark mit kleinem plane icon links davor
+class _Wordmark extends StatelessWidget {
+  const _Wordmark();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(Icons.flight_takeoff, color: Colors.white, size: 32),
-        ),
-        const SizedBox(height: 12),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        Icon(Icons.flight, size: 28, color: Colors.black),
+        SizedBox(width: 8),
         Text(
-          'Vagabond',
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: theme.colorScheme.primary,
+          'vagabond',
+          style: TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -1,
+            color: Colors.black,
           ),
         ),
       ],
